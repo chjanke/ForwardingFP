@@ -33,3 +33,23 @@ struct signature_size<signature<Types...>>{
 
 template<typename T>
 static constexpr size_t signature_size_v = signature_size<T>::value;
+
+//================================================================================
+//                          PACK ACCESS
+//================================================================================
+
+//Using a recursive implementation because our TMP will access all types anyway
+
+template<size_t Index, typename T, typename... Types>
+struct nth_element {
+    using type = typename nth_element<Index - 1, Types...>::type;
+};
+
+template<typename T, typename... Types>
+struct nth_element<0, T, Types...>
+{
+    using type = T;
+};
+
+template<size_t Index, typename... Types>
+using nth_element_t = typename nth_element<Index, Types...>::type;
