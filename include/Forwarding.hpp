@@ -53,3 +53,47 @@ struct nth_element<0, T, Types...>
 
 template<size_t Index, typename... Types>
 using nth_element_t = typename nth_element<Index, Types...>::type;
+
+//================================================================================
+//                     sequence add_front, add_back
+//================================================================================
+
+//TODO: generic implementation for both cases
+
+template<typename Seq, Seq::value_type NewElement>
+struct add_back;
+
+template<bool... Bs, bool NewBool>
+struct add_back<bool_sequence<Bs...>, NewBool>
+{
+    using type = bool_sequence<Bs..., NewBool>;
+};
+
+template<typename Seq, Seq::value_type New>
+using add_back_t = typename add_back<Seq, New>::type;
+
+
+
+template<typename Seq, Seq::value_type NewElement>
+struct add_front;
+
+template<size_t... Indices, size_t NewIndex>
+struct add_front<std::index_sequence<Indices...>, NewIndex>
+{
+    using type = std::index_sequence<NewIndex, Indices...>;
+};
+
+template<bool... Bs, bool NewBool>
+struct add_front<bool_sequence<Bs...>, NewBool>
+{
+    using type = bool_sequence<NewBool, Bs...>;
+};
+
+template<typename Seq, Seq::value_type New>
+using add_front_t = typename add_front<Seq, New>::type;
+
+
+
+//some tests
+static_assert(std::is_same_v<add_front_t<std::index_sequence<0>, 1>, std::index_sequence<1,0>>);
+static_assert(std::is_same_v<add_front_t<bool_sequence<false>, true>, bool_sequence<true,false>>);
