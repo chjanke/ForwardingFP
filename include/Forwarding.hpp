@@ -147,3 +147,38 @@ using value_indices_t = typename value_indices<Signature>::type;
 
 //test
 static_assert(std::is_same_v<value_indices_t<signature<int, bool&, const size_t&, unsigned, char&&, int*>>, std::index_sequence<0,3,5>>);
+
+//================================================================================
+//                             size_t to bool_sequence
+//================================================================================
+
+//TODO: support C++17 ?
+
+template<size_t N, size_t bits, typename IndexSeq>
+struct to_bool_sequence_impl;
+
+template<size_t N, size_t bits, size_t... Powers>
+struct to_bool_sequence_impl<N, bits, std::index_sequence<Powers...>>
+{
+    using type = bool_sequence<((N / (1<<(sizeof...(Powers) - Powers -1)) % 2) == 1)...>; //TODO: formula
+};
+
+template<size_t N, size_t BitWidth = std::log2p1(N)>
+struct to_bool_sequence
+{
+    using type = typename to_bool_sequence_impl<N, BitWidth, std::make_index_sequence<BitWidth>>::type;
+};
+
+template<size_t N, size_t BitWidth = std::log2p1(N)>
+using to_bool_sequence_t = typename to_bool_sequence<N, BitWidth>::type;
+
+
+
+//some tests
+static_assert(std::is_same_v<to_bool_sequence_t<4>, bool_sequence<true,false,false>>);
+static_assert(to_bool_sequence_t<5>::size == 3);
+static_assert(std::is_same_v<to_bool_sequence_t<5>,bool_sequence<true,false,true>>);
+static_assert(std::is_same_v<to_bool_sequence_t<15>, bool_sequence<true,true,true,true>>);
+static_assert(std::is_same_v<to_bool_sequence_t<0>, bool_sequence<>>);
+static_assert(to_bool_sequence_t<5,5>::size == 5);
+static_assert(std::is_same_v<to_bool_sequence_t<5, 5>, bool_sequence<false, false,true,false,true>>);
