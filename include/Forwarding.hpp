@@ -182,3 +182,36 @@ static_assert(std::is_same_v<to_bool_sequence_t<15>, bool_sequence<true,true,tru
 static_assert(std::is_same_v<to_bool_sequence_t<0>, bool_sequence<>>);
 static_assert(to_bool_sequence_t<5,5>::size == 5);
 static_assert(std::is_same_v<to_bool_sequence_t<5, 5>, bool_sequence<false, false,true,false,true>>);
+
+//================================================================================
+//                              indexed_overload
+//================================================================================
+
+//TODO: improve naming
+
+template<size_t Index, bool IsLvalueRef>
+struct indexed_overload
+{
+    static constexpr size_t index = Index;
+    
+    template<typename T>
+    using overload_for = std::conditional_t<IsLvalueRef, T&, T&&>;
+};
+
+//======================================================
+//             make_indexed_overload_sequence
+//======================================================
+
+//TODO: tests
+
+template<typename ValueIndices, typename OverloadBools>
+struct make_indexed_overload_sequence;
+
+template<size_t... ValueIndices, bool... OverloadBs>
+struct make_indexed_overload_sequence<std::index_sequence<ValueIndices...>, bool_sequence<OverloadBs...>>
+{
+    using type = indexed_overload_sequence<indexed_overload<ValueIndices, OverloadBs>...>;
+};
+
+template<typename ValueIndices, size_t OverloadID, size_t MaxOverloadID>
+using make_indexed_overload_sequence_for = typename make_indexed_overload_sequence<ValueIndices, to_bool_sequence<OverloadID, std::log2p1(MaxOverloadID)>>::type;
