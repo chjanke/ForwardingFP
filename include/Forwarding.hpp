@@ -103,9 +103,10 @@ using value_indices_t = typename value_indices<Signature>::type;
 static_assert(std::is_same_v<value_indices_t<signature<int, bool&, const size_t&, unsigned, char&&, int*>>, std::index_sequence<0,3,5>>);
 
 //================================================================================
-//                             test bit of number
+//                             test_bit fn
 //================================================================================
 
+//returns true if the binary representation of n has a '1' at position bitIndex
 inline constexpr bool test_bit(size_t n, size_t bitIndex){
     if(bitIndex > sizeof(size_t) * 8) return 0;
     return n & (1 << bitIndex);
@@ -121,3 +122,28 @@ static_assert(test_bit(4,0) == false && test_bit(4,1) == false && test_bit(4,2) 
 static_assert(test_bit(5,0) == true && test_bit(5,1) == false && test_bit(5,2) == true); //101
 static_assert(test_bit(6,0) == false && test_bit(6,1) == true && test_bit(6,2) == true); //110
 static_assert(test_bit(7,0) == true && test_bit(7,1) == true && test_bit(7,2) == true); //110
+
+//================================================================================
+//                              find_index_of fn
+//================================================================================
+
+//returns the array index of the provided value, or N if indices does not contain it
+inline constexpr size_t find_index_of(std::array<size_t, N> const& indices, size_t value)
+{
+    //std::find is not constexpr until c++20
+    for(size_t i{0}; i != N; ++i){
+        if(indices[i] == value) return i;
+    }
+    return N;
+}
+
+
+
+static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 0) == 0);
+static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 2) == 1);
+static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 4) == 2);
+static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 5) == 3);
+
+static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 3) == 4);
+static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 1) == 4);
+
