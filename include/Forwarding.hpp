@@ -101,3 +101,23 @@ using value_indices_t = typename value_indices<Signature>::type;
 
 //test
 static_assert(std::is_same_v<value_indices_t<signature<int, bool&, const size_t&, unsigned, char&&, int*>>, std::index_sequence<0,3,5>>);
+
+//================================================================================
+//                             test bit of number
+//================================================================================
+
+inline constexpr bool test_bit(size_t n, size_t bitIndex){
+    if(bitIndex > sizeof(size_t) * 8) return 0;
+    return n & (1 << bitIndex);
+}
+
+
+
+static_assert(test_bit(0,0) == false && test_bit(0, 500) == false); //0...
+static_assert(test_bit(1,0) == true && test_bit(1,1) == false && test_bit(1,20) == false); //01
+static_assert(test_bit(2,0) == false && test_bit(2,1) == true); //10
+static_assert(test_bit(3,0) == true && test_bit(3,1) == true); //11
+static_assert(test_bit(4,0) == false && test_bit(4,1) == false && test_bit(4,2) == true); //100
+static_assert(test_bit(5,0) == true && test_bit(5,1) == false && test_bit(5,2) == true); //101
+static_assert(test_bit(6,0) == false && test_bit(6,1) == true && test_bit(6,2) == true); //110
+static_assert(test_bit(7,0) == true && test_bit(7,1) == true && test_bit(7,2) == true); //110
