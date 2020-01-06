@@ -147,3 +147,22 @@ static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 5) == 3);
 static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 3) == 4);
 static_assert(find_index_of(std::array<size_t, 4>{0,2,4,5}, 1) == 4);
 
+//================================================================================
+//                              seq_to_array fn
+//================================================================================
+
+template<typename IndexSeq>
+struct seq_to_array;
+
+template<size_t... Indices>
+struct seq_to_array<std::index_sequence<Indices...>>
+{
+    static constexpr std::array<size_t, sizeof...(Indices)> value()
+    {
+        return {Indices...};
+    }
+};
+
+
+
+static_assert(seq_to_array<std::index_sequence<2,4>>::value()[0] == 2 && seq_to_array<std::index_sequence<2,4>>::value()[1] == 4);
