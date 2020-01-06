@@ -166,3 +166,34 @@ struct seq_to_array<std::index_sequence<Indices...>>
 
 
 static_assert(seq_to_array<std::index_sequence<2,4>>::value()[0] == 2 && seq_to_array<std::index_sequence<2,4>>::value()[1] == 4);
+
+//================================================================================
+//                      make_overload_signature
+//================================================================================
+
+template<typename SignatureType, bool IsRvalueRef>
+using overload_type_t = std::conditional_t<IsRvalueRef, SignatureType&&, SignatureType&>;
+
+
+
+template<typename Signature, typename SigIndices, typename FwdIndices>
+struct make_overload_signature;
+
+template<typename... SigTypes, size_t... SigIndices, size_t... FwdIndices>
+struct make_overload_signature<signature<SigTypes...>, std::index_sequence<SigIndices...>, std::index_sequence<FwdIndices...>>
+{
+    template<size_t Index>
+    static constexpr size_t get_index = find_index_of(seq_to_array<std::index_sequence<FwdIndices...>>::value(), Index);
+
+    template<size_t SigIndex, size_t OverloadID>
+    using type_at = std::conditional_t<get_index<SigIndex> == sizeof...(FwdIndices),
+    nth_element_t<get_index<SigIndex>, SigTypes...>,
+    overload_type_t<nth_element_t<SigIndex, SigTypes...>, test_bit(OverloadID, get_index<SigIndex>)>>;
+
+    template<size_t OverloadID>
+    using type = signature<type_at<SigIndices, OverloadID>...>;
+};
+
+template<typename Signature, typename SigIndices, typename FwdIndices, size_t OverloadID>
+using make_overload_signature_t = make_overload_signature<Signature, SigIndices, FwdIndices>::template type<OverloadID>;
+
