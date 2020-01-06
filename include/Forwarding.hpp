@@ -17,6 +17,30 @@ template<typename... Overloads>
 struct overload_set{};
 
 //================================================================================
+//                              make_fp
+//================================================================================
+
+template<typename Signature>
+struct make_fp;
+
+template<typename... SigTypes>
+struct make_fp<signature<SigTypes...>>{
+
+    template<typename ReturnType, typename... FrontTypes>
+    using type = ReturnType(*)(FrontTypes..., SigTypes...);
+
+};
+
+template<typename Signature, typename ReturnType, typename... FrontTypes>
+using make_fp_t = make_fp<Signature>::template type<ReturnType, FrontTypes...>;
+
+
+
+static_assert(std::is_same_v<make_fp_t<signature<int&, bool&&>, void, void*>, void(*)(void*, int&, bool&&)>);
+static_assert(std::is_same_v<make_fp_t<signature<int&, bool&&>, void>, void(*)(int&, bool&&)>);
+static_assert(std::is_same_v<make_fp_t<signature<int&, bool&&>, int, void*, void*, int*>, int(*)(void*, void*, int*, int&, bool&&)>);
+
+//================================================================================
 //                          PACK ACCESS
 //================================================================================
 
