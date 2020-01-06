@@ -11,6 +11,11 @@
 template<typename... Ts>
 struct signature{};
 
+
+
+template<typename... Overloads>
+struct overload_set{};
+
 //================================================================================
 //                          PACK ACCESS
 //================================================================================
@@ -197,3 +202,23 @@ struct make_overload_signature<signature<SigTypes...>, std::index_sequence<SigIn
 template<typename Signature, typename SigIndices, typename FwdIndices, size_t OverloadID>
 using make_overload_signature_t = make_overload_signature<Signature, SigIndices, FwdIndices>::template type<OverloadID>;
 
+//================================================================================
+//                          make_overload_set from
+//================================================================================
+
+template<typename Signature, typename OverloadIDs>
+struct make_overload_set;
+
+template<typename... SigTypes, size_t... OverloadIDs>
+struct make_overload_set<signature<SigTypes...>, std::index_sequence<OverloadIDs...>>
+{
+    using type = overload_set<make_overload_signature_t<signature<SigTypes...>,std::index_sequence_for<SigTypes...>, value_indices_t<signature<SigTypes...>>, OverloadIDs>...>;
+};
+
+template<typename Signature>
+using make_overload_set_t = make_overload_set<Signature, std::make_index_sequence<2 << (value_indices_t<Signature>::size() - 1)>>::type;
+
+
+
+static_assert(std::is_same_v<make_overload_set_t<signature<int,bool>>,overload_set<signature<int&, bool&>, signature<int&&, bool&>, signature<int&, bool&&>, signature<int&&, bool&&>>>);
+static_assert(std::is_same_v<make_overload_set_t<signature<int>>, overload_set<signature<int&>, signature<int&&>>>);
