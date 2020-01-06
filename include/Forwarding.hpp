@@ -96,7 +96,7 @@ struct value_indices;
 template<typename... Types>
 struct value_indices<signature<Types...>>
 {
-    using type = typename get_value_indices<signature<Types...>, signature_size_v<signature<Types...>>-1, std::index_sequence<>>::type;
+    using type = typename get_value_indices<signature<Types...>, sizeof...(Types) - 1, std::index_sequence<>>::type;
 };
 
 template<typename Signature>
@@ -133,6 +133,7 @@ static_assert(test_bit(7,0) == true && test_bit(7,1) == true && test_bit(7,2) ==
 //================================================================================
 
 //returns the array index of the provided value, or N if indices does not contain it
+template<size_t N>
 inline constexpr size_t find_index_of(std::array<size_t, N> const& indices, size_t value)
 {
     //std::find is not constexpr until c++20
