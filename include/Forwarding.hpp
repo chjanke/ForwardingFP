@@ -61,6 +61,27 @@ template<size_t Index, typename... Types>
 using nth_element_t = typename nth_element<Index, Types...>::type;
 
 //================================================================================
+//                              select_overload
+//================================================================================
+
+template<typename OverloadSet>
+struct select_overload;
+
+template<typename... OverloadSignatures>
+struct select_overload<overload_set<OverloadSignatures...>>
+{
+    template<size_t OverloadID>
+    using type = nth_element_t<OverloadID, OverloadSignatures...>;
+};
+
+template<size_t OverloadID, typename OverloadSet>
+using select_overload_t = select_overload<OverloadSet>::template type<OverloadID>;
+
+
+
+static_assert(std::is_same_v<select_overload_t<1, overload_set<signature<int, bool>, signature<int&, bool&&>, signature<int&&, bool&>>>, signature<int&, bool&&>>);
+
+//================================================================================
 //                       sequence add_front
 //================================================================================
 
