@@ -32,7 +32,7 @@ struct make_fp<signature<SigTypes...>>{
 };
 
 template<typename Signature, typename ReturnType, typename... FrontTypes>
-using make_fp_t = make_fp<Signature>::template type<ReturnType, FrontTypes...>;
+using make_fp_t = typename make_fp<Signature>::template type<ReturnType, FrontTypes...>;
 
 
 
@@ -75,7 +75,7 @@ struct select_overload<overload_set<OverloadSignatures...>>
 };
 
 template<size_t OverloadID, typename OverloadSet>
-using select_overload_t = select_overload<OverloadSet>::template type<OverloadID>;
+using select_overload_t = typename select_overload<OverloadSet>::template type<OverloadID>;
 
 
 
@@ -85,7 +85,7 @@ static_assert(std::is_same_v<select_overload_t<1, overload_set<signature<int, bo
 //                       sequence add_front
 //================================================================================
 
-template<typename Seq, Seq::value_type NewElement>
+template<typename Seq, typename Seq::value_type NewElement>
 struct add_front;
 
 template<size_t... Indices, size_t NewIndex>
@@ -94,7 +94,7 @@ struct add_front<std::index_sequence<Indices...>, NewIndex>
     using type = std::index_sequence<NewIndex, Indices...>;
 };
 
-template<typename Seq, Seq::value_type New>
+template<typename Seq, typename Seq::value_type New>
 using add_front_t = typename add_front<Seq, New>::type;
 
 
@@ -246,7 +246,7 @@ struct make_overload_signature<signature<SigTypes...>, std::index_sequence<SigIn
 };
 
 template<typename Signature, typename SigIndices, typename FwdIndices, size_t OverloadID>
-using make_overload_signature_t = make_overload_signature<Signature, SigIndices, FwdIndices>::template type<OverloadID>;
+using make_overload_signature_t = typename make_overload_signature<Signature, SigIndices, FwdIndices>::template type<OverloadID>;
 
 //================================================================================
 //                          make_overload_set from
@@ -262,7 +262,7 @@ struct make_overload_set<signature<SigTypes...>, std::index_sequence<OverloadIDs
 };
 
 template<typename Signature>
-using make_overload_set_t = make_overload_set<Signature, std::make_index_sequence<2 << (value_indices_t<Signature>::size() - 1)>>::type;
+using make_overload_set_t = typename make_overload_set<Signature, std::make_index_sequence<2 << (value_indices_t<Signature>::size() - 1)>>::type;
 
 
 

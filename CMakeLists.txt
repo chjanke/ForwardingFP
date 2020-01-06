@@ -7,7 +7,7 @@ target_include_directories(
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include/FwdFP>
 	)
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 add_library(FwdFP::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
