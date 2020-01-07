@@ -291,3 +291,14 @@ using make_overload_set_t = typename make_overload_set<Signature, std::make_inde
 
 static_assert(std::is_same_v<make_overload_set_t<signature<int,bool>>,overload_set<signature<int&, bool&>, signature<int&&, bool&>, signature<int&, bool&&>, signature<int&&, bool&&>>>);
 static_assert(std::is_same_v<make_overload_set_t<signature<int>>, overload_set<signature<int&>, signature<int&&>>>);
+
+//================================================================================
+//                              overload_id
+//================================================================================
+//TODO: we can surely calculate the index without going through make_overload_set_t and walking the list
+template<typename BaseSignature, typename OverloadSignature>
+struct overload_id
+{
+    static constexpr size_t value = find_index_v<OverloadSignature, make_overload_set_t<Signature>>;
+};
+
