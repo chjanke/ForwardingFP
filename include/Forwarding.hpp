@@ -60,6 +60,29 @@ struct nth_element<0, T, Types...>
 template<size_t Index, typename... Types>
 using nth_element_t = typename nth_element<Index, Types...>::type;
 
+
+//================================================================================
+//                             PACK FIND
+//================================================================================
+
+template<typename Signature, typename OverloadSet>
+struct find_index;
+
+template<typename Signature, typename... OverloadSignatures>
+struct find_index<Signature, overload_set<Signature, OverloadSignatures...>>
+{
+    static constexpr size_t value = 0;
+};
+
+template<typename Signature, typename Current, typename... OverloadSignatures>
+struct find_index<Signature, overload_set<Current, OverloadSignatures...>>
+{
+    static constexpr size_t value = 1 + find_index<Signature, overload_set<OverloadSignatures...>>::value;
+};
+
+template<typename Signature, typename OverloadSet>
+using find_index_v = typename find_index<Signature, OverloadSet>::value;
+
 //================================================================================
 //                              select_overload
 //================================================================================
