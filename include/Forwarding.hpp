@@ -297,8 +297,6 @@ static_assert(std::is_same_v<make_overload_set_t<signature<int>>, overload_set<s
 //================================================================================
 //TODO: we can surely calculate the index without going through make_overload_set_t and walking the list
 template<typename BaseSignature, typename OverloadSignature>
-struct overload_id
-{
-    static constexpr size_t value = find_index_v<OverloadSignature, make_overload_set_t<Signature>>;
-};
+static constexpr size_t overload_id_v = find_index<OverloadSignature, make_overload_set_t<BaseSignature>>::value;
+
 
